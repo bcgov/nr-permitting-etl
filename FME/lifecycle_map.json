@@ -1,266 +1,14 @@
 {
-  "Draft_Pre-application": {
+  "Allowed_Decision": {
     "status": {
-      "Status": "New",
-      "Status_code": "",
-      "Status_description": ""
-    },
-    "code_set": {
-      "Phase": "APPLICATION",
-      "Stage": "PRE-APPLICATION",
-      "State": "DRAFT"
-    }
-  },
-  "Submitted_Pre-application": {
-    "status": {
-      "Status": "Submitted",
-      "Status_code": "",
+      "Status": "Allowed",
+      "Status_code": "AL",
       "Status_description": ""
     },
     "code_set": {
       "Phase": "PERMITTING",
-      "Stage": "PR-APPLICATION",
-      "State": "SUBMITTED"
-    }
-  },
-  "Submission_review_Initial_submission_review_nodate": {
-    "status": {
-      "Status": "",
-      "Status_code": "",
-      "Status_description": ""
-    },
-    "code_set": {
-      "Phase": "PERMITTING",
-      "Stage": "INITIAL SUBMISSION REVIEW",
-      "State": "SUBMISSION REVIEW"
-    }
-  },
-  "Submission_review_Initial_submission_review": {
-    "status": {
-      "Status": "",
-      "Status_code": "",
-      "Status_description": ""
-    },
-    "code_set": {
-      "Phase": "PERMITTING",
-      "Stage": "INITIAL SUBMISSION REVIEW",
-      "State": "SUBMISSION REVIEW"
-    }
-  },
-  "Rejected_Initial_submission_review": {
-    "status": {
-      "Status": "",
-      "Status_code": "",
-      "Status_description": ""
-    },
-    "code_set": {
-      "Phase": "PERMITTING",
-      "Stage": "INITIAL SUBMISSION REVIEW",
-      "State": "REJECTED"
-    }
-  },
-  "Withdrawn_Initial_submission_review": {
-    "status": {
-      "Status": "Close",
-      "Status_code": "",
-      "Status_description": ""
-    },
-    "code_set": {
-      "Phase": "PERMITTING",
-      "Stage": "INITIAL SUBMISSION REVIEW",
-      "State": "WITHDRAWN"
-    }
-  },
-  "Withdrawn_Initial_submission_review_nullaccept": {
-    "status": {
-      "Status": "Close",
-      "Status_code": "",
-      "Status_description": ""
-    },
-    "code_set": {
-      "Phase": "PERMITTING",
-      "Stage": "INITIAL SUBMISSION REVIEW",
-      "State": "WITHDRAWN"
-    }
-  },
-  "On_Hold_Initial_Submission_Review_onholdenddate": {
-    "status": {
-      "Status": "",
-      "Status_code": "",
-      "Status_description": ""
-    },
-    "code_set": {
-      "Phase": "PERMITTING",
-      "Stage": "INITIAL SUBMISSION REVIEW",
-      "State": "ON HOLD"
-    }
-  },
-  "On_Hold_Initial_Submission_Review_fcbc": {
-    "status": {
-      "Status": "",
-      "Status_code": "",
-      "Status_description": ""
-    },
-    "code_set": {
-      "Phase": "PERMITTING",
-      "Stage": "INITIAL SUBMISSION REVIEW",
-      "State": "ON HOLD"
-    }
-  },
-  "On_Hold_Initial_Submission_Review": {
-    "status": {
-      "Status": "",
-      "Status_code": "",
-      "Status_description": ""
-    },
-    "code_set": {
-      "Phase": "PERMITTING",
-      "Stage": "INITIAL SUBMISSION REVIEW",
-      "State": "ON HOLD"
-    }
-  },
-  "Technical_Review_Technical_Review_and_Comment": {
-    "status": {
-      "Status": "Accepted",
-      "Status_code": "",
-      "Status_description": ""
-    },
-    "code_set": {
-      "Phase": "PERMITTING",
-      "Stage": "TECHNICAL REVIEW AND COMMENT",
-      "State": "TECHNICAL REVIEW"
-    }
-  },
-  "Referral_Technical _Review_and_Comment": {
-    "status": {
-      "Status": "",
-      "Status_code": "",
-      "Status_description": ""
-    },
-    "code_set": {
-      "Phase": "PERMITTING",
-      "Stage": "TECHNICAL REVIEW AND COMMENT",
-      "State": "REFERRAL"
-    }
-  },
-  "First_Nation's_Consultation_Technical _Review_and_Comment_noenddate": {
-    "status": {
-      "Status": "",
-      "Status_code": "",
-      "Status_description": ""
-    },
-    "code_set": {
-      "Phase": "PERMITTING",
-      "Stage": "TECHNICAL REVIEW AND COMMENT",
-      "State": "FIRST NATION'S CONSULTATION"
-    }
-  },
-  "First_Nation's_Consultation_Technical _Review_and_Comment": {
-    "status": {
-      "Status": "",
-      "Status_code": "",
-      "Status_description": ""
-    },
-    "code_set": {
-      "Phase": "PERMITTING",
-      "Stage": "TECHNICAL REVIEW AND COMMENT",
-      "State": "FIRST NATION'S CONSULTATION"
-    }
-  },
-  "Review_Completion_Recommendation_Technical _Review_and_Comment": {
-    "status": {
-      "Status": "",
-      "Status_code": "",
-      "Status_description": ""
-    },
-    "code_set": {
-      "Phase": "PERMITTING",
-      "Stage": "TECHNICAL REVIEW AND COMMENT",
-      "State": "REVIEW COMPLETION RECOMMENDATION"
-    }
-  },
-  "Rejected_Technical _Review_and_Comment": {
-    "status": {
-      "Status": "",
-      "Status_code": "",
-      "Status_description": ""
-    },
-    "code_set": {
-      "Phase": "PERMITTING",
-      "Stage": "TECHNICAL REVIEW AND COMMENT",
-      "State": "REJECTED"
-    }
-  },
-  "Withdrawn_Technical_Review_and_Comment": {
-    "status": {
-      "Status": "Close",
-      "Status_code": "",
-      "Status_description": ""
-    },
-    "code_set": {
-      "Phase": "PERMITTING",
-      "Stage": "TECHNICAL REVIEW AND COMMENT",
-      "State": "WITHDRAWN"
-    }
-  },
-  "On_Hold_Technical_Review_and_Comment_Reporteddate": {
-    "status": {
-      "Status": "",
-      "Status_code": "",
-      "Status_description": ""
-    },
-    "code_set": {
-      "Phase": "PERMITTING",
-      "Stage": "TECHNICAL REVIEW AND COMMENT",
-      "State": "ON HOLD"
-    }
-  },
-  "On_Hold_Technical_Review_and_Comment_FCBCNOTNULL": {
-    "status": {
-      "Status": "",
-      "Status_code": "",
-      "Status_description": ""
-    },
-    "code_set": {
-      "Phase": "PERMITTING",
-      "Stage": "TECHNICAL REVIEW AND COMMENT",
-      "State": "ON HOLD"
-    }
-  },
-  "On_Hold_Technical_Review_and_Comment": {
-    "status": {
-      "Status": "",
-      "Status_code": "",
-      "Status_description": ""
-    },
-    "code_set": {
-      "Phase": "PERMITTING",
-      "Stage": "TECHNICAL REVIEW AND COMMENT",
-      "State": "ON HOLD"
-    }
-  },
-  "On_Hold_Decision_withenddate": {
-    "status": {
-      "Status": "",
-      "Status_code": "",
-      "Status_description": ""
-    },
-    "code_set": {
-      "Phase": "PERMITTING",
-      "Stage": "TECHNICAL REVIEW AND COMMENT",
-      "State": "ON HOLD"
-    }
-  },
-  "On_Hold_Decision": {
-    "status": {
-      "Status": "",
-      "Status_code": "",
-      "Status_description": ""
-    },
-    "code_set": {
-      "Phase": "PERMITTING",
-      "Stage": "TECHNICAL REVIEW AND COMMENT",
-      "State": "ON HOLD"
+      "Stage": "DECISION",
+      "State": "ALLOWED"
     }
   },
   "Decision_Review_Decision": {
@@ -272,25 +20,25 @@
     "code_set": {
       "Phase": "PERMITTING",
       "Stage": "DECISION",
-      "State": "DECISION REVIEW"
+      "State": "DECISION_REVIEW"
     }
   },
-  "Allowed_Decision": {
+  "Declined_Issuance": {
     "status": {
-      "Status": "Allowed or Offered",
-      "Status_code": "",
+      "Status": "Offer Not Accepted",
+      "Status_code": "ON",
       "Status_description": ""
     },
     "code_set": {
       "Phase": "PERMITTING",
-      "Stage": "DECISION",
-      "State": "ALLOWED"
+      "Stage": "ISSUANCE",
+      "State": "DECLINED"
     }
   },
   "Disallowed_Decision": {
     "status": {
-      "Status": "DI",
-      "Status_code": "",
+      "Status": "Disallowed",
+      "Status_code": "DI",
       "Status_description": ""
     },
     "code_set": {
@@ -299,22 +47,46 @@
       "State": "DISALLOWED"
     }
   },
-  "Offered_Issuance": {
+  "Draft_Pre-application": {
     "status": {
-      "Status": "Offered",
+      "Status": "New",
+      "Status_code": "",
+      "Status_description": ""
+    },
+    "code_set": {
+      "Phase": "APPLICATION",
+      "Stage": "PRE_APPLICATION",
+      "State": "DRAFT"
+    }
+  },
+  "First_Nations_Consultation_Technical_Review_and_Comment_noenddate": {
+    "status": {
+      "Status": "",
       "Status_code": "",
       "Status_description": ""
     },
     "code_set": {
       "Phase": "PERMITTING",
-      "Stage": "ISSUANCE",
-      "State": "OFFERED"
+      "Stage": "TECH_REVIEW_COMMENT",
+      "State": "FIRST_NATIONS_CONSULTATION"
+    }
+  },
+  "First_Nations_Consultation_Technical_Review_and_Comment": {
+    "status": {
+      "Status": "",
+      "Status_code": "",
+      "Status_description": ""
+    },
+    "code_set": {
+      "Phase": "PERMITTING",
+      "Stage": "TECH_REVIEW_COMMENT",
+      "State": "FIRST_NATIONS_CONSULTATION"
     }
   },
   "Issued_Issuance": {
     "status": {
       "Status": "GS",
-      "Status_code": "",
+      "Status_code": "GS",
       "Status_description": ""
     },
     "code_set": {
@@ -323,28 +95,124 @@
       "State": "ISSUED"
     }
   },
-  "Declined_Issuance": {
+  "Offered_Issuance": {
     "status": {
-      "Status": "Offer Not Accepted",
-      "Status_code": "",
+      "Status": "Offered",
+      "Status_code": "OF",
       "Status_description": ""
     },
     "code_set": {
       "Phase": "PERMITTING",
       "Stage": "ISSUANCE",
-      "State": "DECLINED"
+      "State": "OFFERED"
     }
   },
-  "Declined_Issuance_withonhold": {
+  "Rejected_Initial_submission_review": {
     "status": {
-      "Status": "Offer Not Accepted",
+      "Status": "",
       "Status_code": "",
       "Status_description": ""
     },
     "code_set": {
       "Phase": "PERMITTING",
-      "Stage": "ISSUANCE",
-      "State": "DECLINED"
+      "Stage": "INITIAL_SUBMISSION_REVIEW",
+      "State": "REJECTED"
+    }
+  },
+  "Submission_review_Initial_submission_review_nodate": {
+    "status": {
+      "Status": "",
+      "Status_code": "",
+      "Status_description": ""
+    },
+    "code_set": {
+      "Phase": "PERMITTING",
+      "Stage": "INITIAL_SUBMISSION_REVIEW",
+      "State": "SUBMISSION_REVIEW"
+    }
+  },
+  "Submission_review_Initial_submission_review": {
+    "status": {
+      "Status": "",
+      "Status_code": "",
+      "Status_description": ""
+    },
+    "code_set": {
+      "Phase": "PERMITTING",
+      "Stage": "INITIAL_SUBMISSION_REVIEW",
+      "State": "SUBMISSION_REVIEW"
+    }
+  },
+  "Submitted_Pre-application": {
+    "status": {
+      "Status": "Submitted",
+      "Status_code": "",
+      "Status_description": ""
+    },
+    "code_set": {
+      "Phase": "PERMITTING",
+      "Stage": "PRE_APPLICATION",
+      "State": "SUBMITTED"
+    }
+  },
+  "Review_Completion_Recommendation_Technical_Review_and_Comment": {
+    "status": {
+      "Status": "",
+      "Status_code": "",
+      "Status_description": ""
+    },
+    "code_set": {
+      "Phase": "PERMITTING",
+      "Stage": "TECH_REVIEW_COMMENT",
+      "State": "TECH_REVIEW_COMPLETED"
+    }
+  },
+  "Technical_Review_Technical_Review_and_Comment": {
+    "status": {
+      "Status": "Accepted",
+      "Status_code": "",
+      "Status_description": ""
+    },
+    "code_set": {
+      "Phase": "PERMITTING",
+      "Stage": "TECH_REVIEW_COMMENT",
+      "State": "TECHNICAL_REVIEW"
+    }
+  },
+  "Withdrawn_Initial_submission_review": {
+    "status": {
+      "Status": "Close",
+      "Status_code": "",
+      "Status_description": ""
+    },
+    "code_set": {
+      "Phase": "PERMITTING",
+      "Stage": "INITIAL_SUBMISSION_REVIEW",
+      "State": "WITHDRAWN"
+    }
+  },
+  "Withdrawn_Initial_submission_review_nullaccept": {
+    "status": {
+      "Status": "Close",
+      "Status_code": "",
+      "Status_description": ""
+    },
+    "code_set": {
+      "Phase": "PERMITTING",
+      "Stage": "INITIAL_SUBMISSION_REVIEW",
+      "State": "WITHDRAWN"
+    }
+  },
+  "Withdrawn_Technical_Review_and_Comment": {
+    "status": {
+      "Status": "Close",
+      "Status_code": "",
+      "Status_description": ""
+    },
+    "code_set": {
+      "Phase": "PERMITTING",
+      "Stage": "TECH_REVIEW_COMMENT",
+      "State": "WITHDRAWN"
     }
   },
   "Withdrawn_Decision": {
@@ -355,7 +223,7 @@
     },
     "code_set": {
       "Phase": "PERMITTING",
-      "Stage": "INITIAL SUBMISSION REVIEW",
+      "Stage": "DECISION",
       "State": "WITHDRAWN"
     }
   }

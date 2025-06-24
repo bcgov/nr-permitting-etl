@@ -13,6 +13,10 @@
         {
           "attr": "CREATEDATE",
           "op": "not_null"
+        },
+        {
+          "attr": "SUBMITTEDDATE",
+          "op": "not_null"
         }
       ]
     }
@@ -41,6 +45,10 @@
         {
           "attr": "APPLICATION_RECEIVED_DATE",
           "op": "not_null"
+        },
+        {
+          "attr": "APPLICATION_ACCEPTED_DATE",
+          "op": "null"
         }
       ]
     }
@@ -58,10 +66,6 @@
       "and": [
         {
           "attr": "APPLICATION_RECEIVED_DATE",
-          "op": "not_null"
-        },
-        {
-          "attr": "FCBC_PROCESS_COMPLETE_DATE",
           "op": "not_null"
         },
         {
@@ -107,7 +111,7 @@
         {
           "attr": "ADJUDICATION_DATE",
           "op": "<=",
-          "other_attr": "ACCEPTED_DATE"
+          "other_attr": "APPLICATION_ACCEPTED_DATE"
         },
         {
           "attr": "AUTHORIZATION_STATUS_CODE",
@@ -143,7 +147,7 @@
           "op": "not_null"
         },
         {
-          "attr": "ACCEPTED_DATE",
+          "attr": "APPLICATION_ACCEPTED_DATE",
           "op": "null"
         },
         {
@@ -192,6 +196,10 @@
         {
           "attr": "FIRST_NATION_START_DATE",
           "op": "not_null"
+        },
+        {
+          "attr": "FIRST_NATION_COMPLETION_DATE",
+          "op": "null"
         }
       ]
     }
@@ -220,13 +228,13 @@
   },
   "Review_Completion_Recommendation_Technical_Review_and_Comment": {
     "start_date": {
-      "attr": "LANDS_STATUS_DAT",
+      "attr": "LAND_STATUS_DAT",
       "op": "not_null"
     },
     "logic": {
       "and": [
         {
-          "attr": "LANDS_STATUS_DAT",
+          "attr": "LAND_STATUS_DAT",
           "op": "not_null"
         }
       ]
@@ -248,28 +256,24 @@
   },
   "Allowed_Decision": {
     "start_date": {
-      "attr": "ADJUDICATED_DATE",
+      "attr": "ADJUDICATED_DAT",
       "op": "not_null"
     },
     "logic": {
       "and": [
         {
-          "attr": "ADJUDICATED_DATE",
+          "attr": "ADJUDICATED_DAT",
           "op": "not_null"
         },
         {
-          "or": [
-            {
-              "attr": "CODE_CHR_STATUS",
-              "op": "=",
-              "value": "AL"
-            },
-            {
-              "attr": "CODE_CHR_STATUS",
-              "op": "=",
-              "value": "OF"
-            }
-          ]
+          "attr": "CODE_CHR_STATUS != 'DI'",
+          "op": "regex",
+          "value": ".*"
+        },
+        {
+          "attr": "CODE_CHR_STATUS != 'CA'",
+          "op": "regex",
+          "value": ".*"
         }
       ]
     }
@@ -282,7 +286,7 @@
     "logic": {
       "and": [
         {
-          "attr": "ADJUDICATED_DATE",
+          "attr": "ADJUDICATED_DAT",
           "op": "not_null"
         },
         {
@@ -307,11 +311,6 @@
         {
           "attr": "OFFERED_DAT",
           "op": "not_null"
-        },
-        {
-          "attr": "CODE_CHR_STATUS",
-          "op": "=",
-          "value": "OF"
         }
       ]
     }
@@ -326,11 +325,6 @@
         {
           "attr": "OFFER_NOT_ACCEPTED_DAT",
           "op": "not_null"
-        },
-        {
-          "attr": "CODE_CHR_STATUS",
-          "op": "=",
-          "value": "ON"
         }
       ]
     }
@@ -345,295 +339,23 @@
         {
           "attr": "COMMENCEMENT_DAT",
           "op": "not_null"
-        },
-        {
-          "attr": "CODE_CHR_STATUS",
-          "op": "=",
-          "value": "GS"
-        }
-      ]
-    }
-  },
-  "Declined_Issuance_withonhold": {
-    "logic": {
-      "and": [
-        {
-          "attr": "APPLICATION_RECEIVED_DATE",
-          "op": "not_null"
-        },
-        {
-          "attr": "APPLICATION_ACCEPTED_DATE",
-          "op": "not_null"
-        },
-        {
-          "attr": "FCBC_COMPLETED_DATE",
-          "op": "not_null"
-        },
-        {
-          "attr": "ON_HOLD_START_DATE",
-          "op": ">=",
-          "other_attr": "FCBC_COMPLETED_DATE"
-        },
-        {
-          "attr": "REPORTED_DAT",
-          "op": "null"
-        }
-      ]
-    }
-  },
-  "On_Hold_Technical_Review_and_Comment": {
-    "start_date": {
-      "attr": "ON_HOLD_START_DATE",
-      "op": "not_null"
-    },
-    "logic": {
-      "and": [
-        {
-          "attr": "APPLICATION_RECEIVED_DATE",
-          "op": "not_null"
-        },
-        {
-          "attr": "APPLICATION_ACCEPTED_DATE",
-          "op": "not_null"
-        },
-        {
-          "attr": "ON_HOLD_START_DATE",
-          "op": ">=",
-          "other_attr": "APPLICATION_ACCEPTED_DATE"
-        },
-        {
-          "attr": "REPORTED_DAT",
-          "op": "null"
-        }
-      ]
-    }
-  },
-  "On_Hold_Initial_Submission_Review": {
-    "start_date": {
-      "attr": "ON_HOLD_START_DATE",
-      "op": "not_null"
-    },
-    "logic": {
-      "and": [
-        {
-          "attr": "APPLICATION_RECEIVED_DATE",
-          "op": "not_null"
-        },
-        {
-          "attr": "ON_HOLD_END_DATE",
-          "op": ">=",
-          "other_attr": "APPLICATION_RECEIVED_DATE"
-        },
-        {
-          "attr": "APPLICATION_ACCEPTED_DATE",
-          "op": "null"
-        }
-      ]
-    }
-  },
-  "On_Hold_Initial_Submission_Review_onholdenddate": {
-    "start_date": {
-      "attr": "ON_HOLD_START_DATE",
-      "op": "not_null"
-    },
-    "logic": {
-      "and": [
-        {
-          "attr": "APPLICATION_RECEIVED_DATE",
-          "op": "not_null"
-        },
-        {
-          "attr": "ON_HOLD_START_DATE",
-          "op": ">=",
-          "other_attr": "APPLICATION_RECEIVED_DATE"
-        },
-        {
-          "attr": "APPLICATION_ACCEPTED_DATE",
-          "op": "not_null"
-        },
-        {
-          "attr": "ON_HOLD_END_DATE",
-          "op": "<=",
-          "other_attr": "APPLICATION_ACCEPTED_DATE"
-        }
-      ]
-    }
-  },
-  "On_Hold_Initial_Submission_Review_fcbc": {
-    "logic": {
-      "and": [
-        {
-          "attr": "APPLICATION_RECEIVED_DATE",
-          "op": "not_null"
-        },
-        {
-          "attr": "APPLICATION_ACCEPTED_DATE",
-          "op": "not_null"
-        },
-        {
-          "attr": "FCBC_COMPLETED_DATE",
-          "op": "not_null"
-        },
-        {
-          "attr": "ON_HOLD_START_DATE",
-          "op": ">=",
-          "other_attr": "APPLICATION_ACCEPTED_DATE"
-        },
-        {
-          "attr": "ON_HOLD_END_DATE",
-          "op": "<=",
-          "other_attr": "FCBC_COMPLETED_DATE"
-        }
-      ]
-    }
-  },
-  "On_Hold_Technical_Review_and_Comment_FCBCNOTNULL": {
-    "start_date": {
-      "attr": "ON_HOLD_START_DATE",
-      "op": "not_null"
-    },
-    "logic": {
-      "and": [
-        {
-          "attr": "APPLICATION_RECEIVED_DATE",
-          "op": "not_null"
-        },
-        {
-          "attr": "APPLICATION_ACCEPTED_DATE",
-          "op": "not_null"
-        },
-        {
-          "attr": "FCBC_COMPLETED_DATE",
-          "op": "not_null"
-        },
-        {
-          "attr": "ON_HOLD_START_DATE",
-          "op": ">=",
-          "other_attr": "APPLICATION_ACCEPTED_DATE"
-        },
-        {
-          "attr": "REPORTED_DAT",
-          "op": "null"
-        }
-      ]
-    }
-  },
-  "On_Hold_Technical_Review_and_Comment_Reporteddate": {
-    "start_date": {
-      "attr": "ON_HOLD_START_DATE",
-      "op": "not_null"
-    },
-    "logic": {
-      "and": [
-        {
-          "attr": "APPLICATION_RECEIVED_DATE",
-          "op": "not_null"
-        },
-        {
-          "attr": "APPLICATION_ACCEPTED_DATE",
-          "op": "not_null"
-        },
-        {
-          "attr": "FCBC_COMPLETED_DATE",
-          "op": "not_null"
-        },
-        {
-          "attr": "REPORTED_DAT",
-          "op": "not_null"
-        },
-        {
-          "attr": "ON_HOLD_START_DATE",
-          "op": ">=",
-          "other_attr": "APPLICATION_ACCEPTED_DATE"
-        },
-        {
-          "attr": "ON_HOLD_END_DATE",
-          "op": "<=",
-          "other_attr": "REPORTED_DAT"
-        }
-      ]
-    }
-  },
-  "On_Hold_Decision": {
-    "start_date": {
-      "attr": "ON_HOLD_START_DATE",
-      "op": "not_null"
-    },
-    "logic": {
-      "and": [
-        {
-          "attr": "APPLICATION_RECEIVED_DATE",
-          "op": "not_null"
-        },
-        {
-          "attr": "APPLICATION_ACCEPTED_DATE",
-          "op": "not_null"
-        },
-        {
-          "attr": "REPORTED_DAT",
-          "op": "not_null"
-        },
-        {
-          "attr": "ON_HOLD_START_DATE",
-          "op": ">=",
-          "other_attr": "REPORTED_DAT"
-        },
-        {
-          "attr": "ADJUDICATED_DAT",
-          "op": "null"
-        }
-      ]
-    }
-  },
-  "On_Hold_Decision_withenddate": {
-    "start_date": {
-      "attr": "ON_HOLD_START_DATE",
-      "op": "not_null"
-    },
-    "logic": {
-      "and": [
-        {
-          "attr": "APPLICATION_RECEIVED_DATE",
-          "op": "not_null"
-        },
-        {
-          "attr": "APPLICATION_ACCEPTED_DATE",
-          "op": "not_null"
-        },
-        {
-          "attr": "REPORTED_DAT",
-          "op": "not_null"
-        },
-        {
-          "attr": "ADJUDICATION_DATE",
-          "op": "not_null"
-        },
-        {
-          "attr": "ON_HOLD_START_DATE",
-          "op": ">=",
-          "other_attr": "REPORTED_DAT"
-        },
-        {
-          "attr": "ON_HOLD_END_DATE",
-          "op": "<=",
-          "other_attr": "ADJUDICATION_DAT"
         }
       ]
     }
   },
   "Withdrawn_Technical_Review_and_Comment": {
     "start_date": {
-      "attr": "CANCELLED_DATE",
+      "attr": "CANCELED_DAT",
       "op": "not_null"
     },
     "logic": {
       "and": [
         {
-          "attr": "CANCELLED_DATE",
+          "attr": "CANCELED_DAT",
           "op": "not_null"
         },
         {
-          "attr": "ACCEPTED_DATE",
+          "attr": "APPLICATION_ACCEPTED_DATE",
           "op": "not_null"
         },
         {
@@ -641,9 +363,9 @@
           "op": "null"
         },
         {
-          "attr": "CANCELLED_DATE",
+          "attr": "CANCELED_DAT",
           "op": ">=",
-          "other_attr": "ACCEPTED_DATE"
+          "other_attr": "APPLICATION_ACCEPTED_DATE"
         },
         {
           "attr": "CODE_CHR_STATUS",
@@ -659,17 +381,17 @@
   },
   "Withdrawn_Decision": {
     "start_date": {
-      "attr": "CANCELLED_DATE",
+      "attr": "CANCELED_DAT",
       "op": "not_null"
     },
     "logic": {
       "and": [
         {
-          "attr": "CANCELLED_DATE",
+          "attr": "CANCELED_DAT",
           "op": "not_null"
         },
         {
-          "attr": "ACCEPTED_DATE",
+          "attr": "APPLICATION_ACCEPTED_DATE",
           "op": "not_null"
         },
         {
@@ -681,7 +403,7 @@
           "op": "null"
         },
         {
-          "attr": "CANCELLED_DATE",
+          "attr": "CANCELED_DAT",
           "op": ">=",
           "other_attr": "REPORTED_DAT"
         },
