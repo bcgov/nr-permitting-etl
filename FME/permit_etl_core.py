@@ -41,6 +41,48 @@ import re
 import sys
 import time
 import uuid
+# ── uuid7 fallback (NR-PIES-safe) ───────────────────────────
+import secrets, time, uuid
+
+def uuid7() -> uuid.UUID:
+    """
+    Pure-Python UUID v7  (timestamp + random), valid for NR-PIES:
+      • 48 bit unix-ms timestamp
+      •  4 bit version 7
+      • 12 bit random_a
+      •  2 bit variant (10)
+      • 14 bit clock_seq
+      • 48 bit node  (12 hex)
+    """
+    # ── 48-bit 毫秒级时间戳 ───────────────────────────────────────────
+    ts_ms = int(time.time_ns() // 1_000_000)
+
+    # ── 12 bit + 62 bit 随机 ─────────────────────────────────────────
+    rand_a = secrets.randbits(12)           # 12 bit for time_hi
+    rand_b = secrets.randbits(62)           # 14 bit clock_seq + 48 bit node
+
+    clock_seq = (rand_b >> 48) & 0x3FFF     # 高 14 bit
+    node      =  rand_b & ((1 << 48) - 1)   # 低 48 bit  → 12 hex, OK!
+
+    # ── 时间字段 ────────────────────────────────────────────────────
+    time_low  = ts_ms & 0xFFFFFFFF
+    time_mid  = (ts_ms >> 32) & 0xFFFF
+    time_hi   = (rand_a | 0x7000)           # version 7
+
+    # ── variant ─────────────────────────────────────────────────────
+    clock_seq_hi = ((clock_seq >> 8) & 0x3F) | 0x80  # 10xxxxxx
+    clock_seq_lo = clock_seq & 0xFF
+
+    # ── 打包为 16 byte ──────────────────────────────────────────────
+    uuid_bytes = (
+        time_low.to_bytes(4, "big")  +
+        time_mid.to_bytes(2, "big")  +
+        time_hi.to_bytes(2,  "big")  +
+        bytes([clock_seq_hi, clock_seq_lo]) +
+        node.to_bytes(6, "big")      # 正好 48 bit
+    )
+    return uuid.UUID(bytes=uuid_bytes)
+
 # ------------------------------------------------------------------
 # Built-in default locations  (edit as you like)
 # ------------------------------------------------------------------
@@ -536,8 +578,8 @@ def _build_event(
 def _build_pes(row: Mapping[str, Any], events: List[Mapping]) -> Dict[str, Any]:
     """Create a *ProcessEventSet* wrapper for *events*."""
     return {
-        "transaction_id": str(uuid.uuid4()),
-        # "transaction_id": str(uuid7()),
+        # "transaction_id": str(uuid.uuid4()),
+        "transaction_id": str(uuid7()),
         "version": "0.1.0",
         "kind": "ProcessEventSet",
         "system_id": row.get("system_id", "ITSM-5917"),
