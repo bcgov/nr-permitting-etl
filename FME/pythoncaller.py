@@ -1,37 +1,40 @@
-# ── FME PythonCaller script for ETL permit data ───────────────────────
+# ── FME PythonCaller script for ETL permit data ─────────────────────── 
 # ── Description: This script is used in the FME PythonCaller transformer
 # ── to process permit data and generate JSON output.
 # ── README / Help Documentation ──────────────────────────────────────
 # This script is designed to be used within the FME PythonCaller transformer.
 # It processes permit data and generates JSON output based on specific rules
 # and lifecycle configurations. Below is a brief guide to its usage:
-
+#
 # 1. Prerequisites:
-#    - Ensure the `permit_etl_core.py`, 'rules.json' and 'lifecycle_map.json' are available in the specified path.
-#    - Provide valid `RulesFile` and `LifecycleFile` paths via FME macro values(User attributes).
-#    - An AttributeExposer transformer must be placed after the PythonCaller.
-
+#    - Ensure the folder that contains `permit_etl_core.py`, `rules.json`,
+#      and `lifecycle_map.json` is available on disk.
+#    - Pass that **folder path** to the PythonCaller parameter
+#      “FILE_PATH”.  The script will append `permit_etl_core.py` automatically.
+#    - Provide valid FILE_PATH(folder),`RulesFile`(file) and `LifecycleFile`(file) parameters via FME User parameters.
+#
 # 2. Key Components:
 #    - `FeatureProcessor`: Main class handling feature processing.
 #    - `input`: Processes each feature, applies rules, and generates JSON output.
 #    - `close`: Finalizes processing and logs summary statistics.
-
+#
 # 3. Outputs:
 #    - Adds a `json_output` attribute to features containing the generated JSON.
-
+#
 # 4. Notes:
 #    - The transformer AttributeExposer must be placed after the PythonCaller
 #      to expose the `json_output` attribute for further use in the workflow.
-
+#
 # 5. Logging:
 #    - Logs initialization, example outputs, and summary statistics to FME logs.
-
+#
 # 6. Example Usage:
-#    - Place `permit_etl_core.py`, 'rules.json' and 'lifecycle_map.json' to your local path.
-#    - Change the path in `sys.path.append(r"C:\Users\W1ZHANG\Documents\FME\Workspaces")`
+#    - Copy `permit_etl_core.py`, `rules.json`, and `lifecycle_map.json`
+#      into a workspace folder.
+#    - Set PythonCaller parameter **FILE_PATH** to that folder, e.g.
+#        “$(FME_MF_DIR)”  (or any absolute folder path).
 #    - Place this script in the PythonCaller transformer.
 #    - Configure the `RulesFile` and `LifecycleFile` paths in the transformer.
-#    - Change the name of RulesFile and LifecycleFile if you have different names. e.g.LandRules, LandLifecycle.
 #    - Use AttributeExposer to make the `json_output` attribute available.
 # ------------------ PythonCaller: FeatureProcessor ------------------
 import sys, math, json
@@ -41,9 +44,17 @@ from datetime import date, datetime
 import fme
 import fmeobjects  # for logging + FME_NULL
 
-# Add folder that holds permit_etl_core.py
-sys.path.append(r"C:\Users\W1ZHANG\Documents\FME\Workspaces")
-import permit_etl_core as etl  # (unchanged!)
+# ── Dynamically add folder that holds permit_etl_core.py ---------------
+folder_path = fme.macroValues.get("FILE_PATH")      # published parameter
+if not folder_path:
+    raise ValueError("PythonCaller parameter FILE_PATH is not set")
+
+folder = Path(folder_path.strip('"')).expanduser()  # tolerate stray quotes
+if not folder.is_dir():
+    raise FileNotFoundError(f"{folder!r} is not a directory")
+
+sys.path.append(str(folder))                        # make module importable
+import permit_etl_core as etl                       # (unchanged!)
 
 # ── FME logger -----------------------------------------------------
 _log = fmeobjects.FMELogFile()
