@@ -45,42 +45,24 @@ import uuid
 import secrets, time, uuid
 
 def uuid7() -> uuid.UUID:
-    """
-    Pure-Python UUID v7  (timestamp + random), valid for NR-PIES:
-      • 48 bit unix-ms timestamp
-      •  4 bit version 7
-      • 12 bit random_a
-      •  2 bit variant (10)
-      • 14 bit clock_seq
-      • 48 bit node  (12 hex)
-    """
-    # ── 48-bit 毫秒级时间戳 ───────────────────────────────────────────
-    ts_ms = int(time.time_ns() // 1_000_000)
+    # 1) 48-bit timestamp
+    ts_ms = int(time.time() * 1000)
+    ts_bytes = ts_ms.to_bytes(6, "big")            # 6 bytes
 
-    # ── 12 bit + 62 bit 随机 ─────────────────────────────────────────
-    rand_a = secrets.randbits(12)           # 12 bit for time_hi
-    rand_b = secrets.randbits(62)           # 14 bit clock_seq + 48 bit node
+    # 2) version(4) + rand_a(12)
+    rand_a = secrets.randbits(12)
+    time_hi_and_version = (0x7 << 12) | rand_a     # version=7
+    thv_bytes = time_hi_and_version.to_bytes(2, "big")
 
-    clock_seq = (rand_b >> 48) & 0x3FFF     # 高 14 bit
-    node      =  rand_b & ((1 << 48) - 1)   # 低 48 bit  → 12 hex, OK!
+    # 3) variant(2) + rand_b(62)
+    rand_b = secrets.randbits(62)
+    top6   = (rand_b >> 56) & 0x3F                 # 高 6 bit
+    rem56  =  rand_b & ((1 << 56) - 1)             # 低 56 bit
+    variant_byte = top6 | 0x80                     # 10xxxxxx → variant=IETF
+    rem56_bytes  = rem56.to_bytes(7, "big")        # 7 bytes
 
-    # ── 时间字段 ────────────────────────────────────────────────────
-    time_low  = ts_ms & 0xFFFFFFFF
-    time_mid  = (ts_ms >> 32) & 0xFFFF
-    time_hi   = (rand_a | 0x7000)           # version 7
-
-    # ── variant ─────────────────────────────────────────────────────
-    clock_seq_hi = ((clock_seq >> 8) & 0x3F) | 0x80  # 10xxxxxx
-    clock_seq_lo = clock_seq & 0xFF
-
-    # ── 打包为 16 byte ──────────────────────────────────────────────
-    uuid_bytes = (
-        time_low.to_bytes(4, "big")  +
-        time_mid.to_bytes(2, "big")  +
-        time_hi.to_bytes(2,  "big")  +
-        bytes([clock_seq_hi, clock_seq_lo]) +
-        node.to_bytes(6, "big")      # 正好 48 bit
-    )
+    # 4) 拼装 16 字节 UUID
+    uuid_bytes = ts_bytes + thv_bytes + bytes([variant_byte]) + rem56_bytes
     return uuid.UUID(bytes=uuid_bytes)
 
 # ------------------------------------------------------------------
