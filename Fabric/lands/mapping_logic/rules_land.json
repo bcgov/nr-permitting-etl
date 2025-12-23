@@ -1,0 +1,342 @@
+{
+  "Draft_Pre-application": {
+    "start_date": {
+      "attr": "CREATEDDATE",
+      "op": "not_null"
+    },
+    "end_date": {
+      "attr": "SUBMITTEDDATE",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "CREATEDDATE",
+          "op": "not_null"
+        },
+        {
+          "attr": "SUBMITTEDDATE",
+          "op": "not_null"
+        }
+      ]
+    }
+  },
+  "Submitted_Pre-application": {
+    "start_date": {
+      "attr": "SUBMITTEDDATE",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "SUBMITTEDDATE",
+          "op": "not_null"
+        }
+      ]
+    }
+  },
+  "Submission_review_Initial_submission_review_nodate": {
+    "start_date": {
+      "attr": "APPLICATION_RECEIVED_DATE",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "APPLICATION_RECEIVED_DATE",
+          "op": "not_null"
+        },
+        {
+          "attr": "APPLICATION_ACCEPTED_DATE",
+          "op": "null"
+        }
+      ]
+    }
+  },
+  "Submission_review_Initial_submission_review": {
+    "start_date": {
+      "attr": "APPLICATION_RECEIVED_DATE",
+      "op": "not_null"
+    },
+    "end_date": {
+      "attr": "APPLICATION_ACCEPTED_DATE",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "APPLICATION_RECEIVED_DATE",
+          "op": "not_null"
+        },
+        {
+          "attr": "APPLICATION_ACCEPTED_DATE",
+          "op": "not_null"
+        }
+      ]
+    }
+  },
+  "Rejected_Initial_submission_review": {
+    "start_date": {
+      "attr": "APPLICATION_REJECTED_DATE",
+      "op": "not_null"
+    },
+    "end_date": {
+      "attr": "APPLICATION_REJECTED_DATE",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "APPLICATION_REJECTED_DATE",
+          "op": "not_null"
+        },
+        {
+          "attr": "AUTHORIZATION_STATUS_CODE",
+          "op": "=",
+          "value": "2"
+        },
+        {
+          "or": [
+            {
+              "attr": "ATHN_CLOSE_REASON_CODE",
+              "op": "=",
+              "value": "2"
+            },
+            {
+              "attr": "ATHN_CLOSE_REASON_CODE",
+              "op": "=",
+              "value": "3"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Withdrawn_Initial_submission_review": {
+    "start_date": {
+      "attr": "ADJUDICATION_DATE",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "ADJUDICATION_DATE",
+          "op": "not_null"
+        },
+        {
+          "attr": "AUTHORIZATION_STATUS_CODE",
+          "op": "=",
+          "value": "2"
+        },
+        {
+          "or": [
+            {
+              "attr": "ATHN_CLOSE_REASON_CODE",
+              "op": "=",
+              "value": "4"
+            },
+            {
+              "attr": "ATHN_CLOSE_REASON_CODE",
+              "op": "=",
+              "value": "81"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Technical_Review_Technical_Review_and_Comment": {
+    "start_date": {
+      "attr": "APPLICATION_ACCEPTED_DATE",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "APPLICATION_ACCEPTED_DATE",
+          "op": "not_null"
+        }
+      ]
+    }
+  },
+  "First_Nations_Consultation_Technical_Review_and_Comment_noenddate": {
+    "start_date": {
+      "attr": "FIRST_NATION_START_DATE",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "FIRST_NATION_START_DATE",
+          "op": "not_null"
+        },
+        {
+          "attr": "FIRST_NATION_COMPLETION_DATE",
+          "op": "null"
+        }
+      ]
+    }
+  },
+  "First_Nations_Consultation_Technical_Review_and_Comment": {
+    "start_date": {
+      "attr": "FIRST_NATION_START_DATE",
+      "op": "not_null"
+    },
+    "end_date": {
+      "attr": "FIRST_NATION_COMPLETION_DATE",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "FIRST_NATION_START_DATE",
+          "op": "not_null"
+        },
+        {
+          "attr": "FIRST_NATION_COMPLETION_DATE",
+          "op": "not_null"
+        }
+      ]
+    }
+  },
+  "Review_Completion_Recommendation_Technical_Review_and_Comment": {
+    "start_date": {
+      "attr": "LAND_STATUS_DAT",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "LAND_STATUS_DAT",
+          "op": "not_null"
+        }
+      ]
+    }
+  },
+  "Decision_Review_Decision": {
+    "start_date": {
+      "attr": "REPORTED_DAT",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "REPORTED_DAT",
+          "op": "not_null"
+        }
+      ]
+    }
+  },
+  "Allowed_Decision": {
+    "start_date": {
+      "attr": "ADJUDICATED_DAT",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "ADJUDICATED_DAT",
+          "op": "not_null"
+        },
+        {
+          "attr": "CODE_CHR_STATUS != 'DI'",
+          "op": "regex",
+          "value": ".*"
+        },
+        {
+          "attr": "CODE_CHR_STATUS != 'CA'",
+          "op": "regex",
+          "value": ".*"
+        }
+      ]
+    }
+  },
+  "Disallowed_Decision": {
+    "start_date": {
+      "attr": "DISALLOWED_DAT",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "ADJUDICATED_DAT",
+          "op": "not_null"
+        },
+        {
+          "attr": "DISALLOWED_DAT",
+          "op": "not_null"
+        },
+        {
+          "attr": "CODE_CHR_STATUS",
+          "op": "=",
+          "value": "DI"
+        }
+      ]
+    }
+  },
+  "Offered_Issuance": {
+    "start_date": {
+      "attr": "OFFERED_DAT",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "OFFERED_DAT",
+          "op": "not_null"
+        }
+      ]
+    }
+  },
+  "Declined_Issuance": {
+    "start_date": {
+      "attr": "OFFER_NOT_ACCEPTED_DAT",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "OFFER_NOT_ACCEPTED_DAT",
+          "op": "not_null"
+        }
+      ]
+    }
+  },
+  "Issued_Issuance": {
+    "start_date": {
+      "attr": "COMMENCEMENT_DAT",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "COMMENCEMENT_DAT",
+          "op": "not_null"
+        }
+      ]
+    }
+  },
+  "Withdrawn_Technical_Review_Decision": {
+    "start_date": {
+      "attr": "CANCELED_DAT",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "CANCELED_DAT",
+          "op": "not_null"
+        },
+        {
+          "attr": "CODE_CHR_STATUS",
+          "op": "=",
+          "value": "CA"
+        },
+        {
+          "attr": "EXPIRY_DAT",
+          "op": "null"
+        }
+      ]
+    }
+  }
+}

@@ -1,4 +1,3 @@
-```markdown
 # Permitting ETL Engine
 
 This project implements a metadata-driven ETL pipeline to transform permitting system records into standardized `ProcessEventSet` JSON objects based on the [NR-PIES Specification](https://bcgov.github.io/nr-pies/docs/spec/element/message/process_event_set).
@@ -18,7 +17,8 @@ Traditionally, permitting ETL processes require hardcoded logic or complex recon
 - **Plug & Play with Any ETL Tool**  
     The engine is framework-agnostic. You can:
     - Run it inside **FME** (via PythonCaller)
-    - Call it from **Airflow**, **Azure Data Factory**, or **Fabric Pipelines**
+    - Run it inside **Fabric Pipelines**
+    - Call it from **Airflow**, **Azure Data Factory**, or other orchestration tools
     - Use it in **standalone scripts** or **API services**
 
 - **Dynamic Lifecycle Mapping**  
@@ -41,7 +41,7 @@ Traditionally, permitting ETL processes require hardcoded logic or complex recon
 
 ## Overview
 
-This ETL Engine is designed to run in any ETL tool, with specific support for integration into FME workspaces using a PythonCaller transformer. It applies rule-based logic to permit records and generates structured `process_event` output in accordance with NR-PIES specs.
+This ETL Engine is designed to run in any ETL tool, with specific support for integration into FME workspaces and Fabric Pipelines. It applies rule-based logic to permit records and generates structured `process_event` output in accordance with NR-PIES specs.
 
 ### Key Inputs
 
@@ -52,7 +52,7 @@ This ETL Engine is designed to run in any ETL tool, with specific support for in
 ## How It Works
 
 1. **Feature Extraction**  
-     All incoming attributes from the feature are extracted and normalized (In progress).
+     All incoming attributes from the feature are extracted and normalized.
 
 2. **Rule Matching**  
      Each rule in `rules.json` is evaluated against the feature row.
@@ -61,7 +61,7 @@ This ETL Engine is designed to run in any ETL tool, with specific support for in
      Matching rules are transformed into `process_event` objects with dates, process codes, and statuses.
 
 4. **JSON Output**  
-     A `ProcessEventSet` JSON object is attached to the feature as an attribute named `json_output`.
+     A `ProcessEventSet` JSON object is generated and saved to the specified output location.
 
 ## Directory Structure
 
@@ -71,7 +71,17 @@ This ETL Engine is designed to run in any ETL tool, with specific support for in
 │   ├── rules.json            # Mapping Rule definitions
 │   ├── lifecycle_map.json    # Lifecycle mapping
 │   ├── pythoncaller.py       # PythonCaller script for FME (FeatureProcessor class)
-├── permit_etl_core.py        # Shared ETL logic (used by both FME and standalone script)
+├── Fabric/
+│   ├── mapping_logic/
+│   │   ├── lifecycle_map.json    # Lifecycle mapping
+│   │   ├── rules_land.json       # Land-specific rules
+│   │   └── rules_water.json      # Water-specific rules
+│   ├── notebook/
+│       ├── lands_pies_id.py      # Land ETL logic
+│       ├── water_authorizationid.py
+│       ├── water_jobnumber.py
+│       └── water_vfcbctrackingnumber.py
+├── permit_etl_core.py        # Shared ETL logic (used by both FME and Fabric)
 ```
 
 ## JSON Output Format
@@ -86,7 +96,8 @@ Conforms to the [NR-PIES `ProcessEventSet`](https://bcgov.github.io/nr-pies/docs
     "system_id": "ITSM-5917",
     "record_id": "123456",
     "record_kind": "Permit",
-    "process_event": [
+    "on_hold_event_set": [],
+    "process_event_set": [
         {
             "event": {
                 "start_date": "YYYY-MM-DD",
@@ -113,8 +124,8 @@ Conforms to the [NR-PIES `ProcessEventSet`](https://bcgov.github.io/nr-pies/docs
 
 ## 🛠 Requirements
 
-- FME 2023+ (Python 3.11+)
-- Ensure `permit_etl_core.py`, `rules.json`, and `lifecycle_map.json` are placed in the FME workspace directory for proper integration.
+- Python 3.11+
+- Ensure `permit_etl_core.py`, `rules.json`, and `lifecycle_map.json` are placed in the appropriate directory for proper integration.
 - JSON rules and lifecycle maps stored as UTF-8 files.
 
 ## How to Use in FME
@@ -132,11 +143,18 @@ Conforms to the [NR-PIES `ProcessEventSet`](https://bcgov.github.io/nr-pies/docs
      - Body: Set the body to the `json_output` attribute.
      - Response Handling: Capture the response in an attribute (e.g., `response_output`) for further processing or logging.
 
+## How to Use in Fabric Pipelines
+
+1. Add the required notebook scripts to your Fabric pipeline.
+2. Configure the pipeline to load the appropriate `rules.json` and `lifecycle_map.json` files.
+3. Define the input source (e.g., Oracle, CSV) and output destination for the `ProcessEventSet` JSON.
+4. Run the pipeline to process the data and generate the output.
+
 ## Optional: Use in Any ETL Tool
 
 ### Using the Universal ETL Logic Module
 
-A standalone script leveraging the same core logic is available in `permit_etl_core.py`. This script can be integrated into automation tools such as Airflow, Azure Data Factory, or Fabric Pipelines. Additionally, you can use `run_etl.py` to orchestrate data transformations across various ETL platforms, including Airbyte, Fabric, and others.
+A standalone script leveraging the same core logic is available in `permit_etl_core.py`. This script can be integrated into automation tools such as Airflow, Azure Data Factory, or other ETL platforms. Additionally, you can use `run_etl.py` to orchestrate data transformations across various ETL platforms.
 
 #### Output
 
@@ -144,5 +162,4 @@ The script will generate a `ProcessEventSet` JSON file based on the provided inp
 
 ## Contact
 
-For questions or contributions, reach out to the NRIDS data team.
-```
+For questions or contributions, reach out to the CSBC NR data team.

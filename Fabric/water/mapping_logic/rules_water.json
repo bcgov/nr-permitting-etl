@@ -1,0 +1,287 @@
+{
+  "Draft_Pre-application": {
+    "start_date": {
+      "attr": "CREATEDDATE",
+      "op": "not_null"
+    },
+    "end_date": {
+      "attr": "SUBMITTEDDATE",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "CREATEDDATE",
+          "op": "not_null"
+        },
+        {
+          "attr": "SUBMITTEDDATE",
+          "op": "not_null"
+        }
+      ]
+    }
+  },
+  "Submitted_Pre-application": {
+    "start_date": {
+      "attr": "SUBMITTEDDATE",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "SUBMITTEDDATE",
+          "op": "not_null"
+        }
+      ]
+    }
+  },
+  "Submission_review_Initial_submission_review_nodate": {
+    "start_date": {
+      "attr": "APPLICATION_RECEIVED_DATE",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "APPLICATION_RECEIVED_DATE",
+          "op": "not_null"
+        },
+        {
+          "attr": "APPLICATION_ACCEPTED_DATE",
+          "op": "null"
+        }
+      ]
+    }
+  },
+  "Submission_review_Initial_submission_review": {
+    "start_date": {
+      "attr": "APPLICATION_RECEIVED_DATE",
+      "op": "not_null"
+    },
+    "end_date": {
+      "attr": "APPLICATION_ACCEPTED_DATE",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "APPLICATION_RECEIVED_DATE",
+          "op": "not_null"
+        },
+        {
+          "attr": "APPLICATION_ACCEPTED_DATE",
+          "op": "not_null"
+        }
+      ]
+    }
+  },
+  "Technical_Review_Technical_Review_and_Comment": {
+    "start_date": {
+      "attr": "APPLICATION_ACCEPTED_DATE",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "APPLICATION_ACCEPTED_DATE",
+          "op": "not_null"
+        },
+        {
+          "attr": "TECHASSESSMENTCOMPLETEDATE",
+          "op": "null"
+        }
+      ]
+    }
+  },
+  "First_Nations_Consultation_Technical_Review_and_Comment_noenddate": {
+    "start_date": {
+      "attr": "FIRST_NATION_START_DATE",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "FIRST_NATION_START_DATE",
+          "op": "not_null"
+        },
+        {
+          "attr": "FIRST_NATION_COMPLETION_DATE",
+          "op": "null"
+        }
+      ]
+    }
+  },
+  "First_Nations_Consultation_Technical_Review_and_Comment": {
+    "start_date": {
+      "attr": "FIRST_NATION_START_DATE",
+      "op": "not_null"
+    },
+    "end_date": {
+      "attr": "FIRST_NATION_COMPLETION_DATE",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "FIRST_NATION_START_DATE",
+          "op": "not_null"
+        },
+        {
+          "attr": "FIRST_NATION_COMPLETION_DATE",
+          "op": "not_null"
+        }
+      ]
+    }
+  },
+  "TECH_REVIEW_COMPLETED_TECH_REVIEW_COMMENT": {
+    "start_date": {
+      "attr": "TECHASSESSMENTCOMPLETEDATE",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "TECHASSESSMENTCOMPLETEDATE",
+          "op": "not_null"
+        }
+      ]
+    }
+  },
+  "Decision_Review_Decision": {
+    "start_date": {
+      "attr": "LEGALCHECKCOMPLETEDATE",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "LEGALCHECKCOMPLETEDATE",
+          "op": "not_null"
+        }
+      ]
+    }
+  },
+  "Allowed_Decision": {
+    "start_date": {
+      "attr": "GRANTEDREFUSEDATE",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "GRANTEDREFUSEDATE",
+          "op": "not_null"
+        },
+        {
+          "attr": "STATUSTRANSFORMED",
+          "op": "=",
+          "value": "Granted"
+        }
+      ]
+    }
+  },
+  "Disallowed_Decision": {
+    "start_date": {
+      "attr": "GRANTEDREFUSEDATE",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "GRANTEDREFUSEDATE",
+          "op": "not_null"
+        },
+        {
+          "attr": "STATUSTRANSFORMED",
+          "op": "=",
+          "value": "Refused"
+        }
+      ]
+    }
+  },
+  "Rejected_Initial_submission_review": {
+    "start_date": {
+      "attr": "APPLICATION_REJECTED_DATE",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "APPLICATION_REJECTED_DATE",
+          "op": "not_null"
+        },
+        {
+          "attr": "AUTHORIZATION_STATUS_CODE",
+          "op": "=",
+          "value": "2"
+        },
+        {
+          "or": [
+            {
+              "attr": "ATHN_CLOSE_REASON_CODE",
+              "op": "=",
+              "value": "2"
+            },
+            {
+              "attr": "ATHN_CLOSE_REASON_CODE",
+              "op": "=",
+              "value": "3"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Withdrawn_Initial_submission_review": {
+    "start_date": {
+      "attr": "ADJUDICATION_DATE",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "ADJUDICATION_DATE",
+          "op": "not_null"
+        },
+        {
+          "attr": "AUTHORIZATION_STATUS_CODE",
+          "op": "=",
+          "value": "2"
+        },
+        {
+          "or": [
+            {
+              "attr": "ATHN_CLOSE_REASON_CODE",
+              "op": "=",
+              "value": "4"
+            },
+            {
+              "attr": "ATHN_CLOSE_REASON_CODE",
+              "op": "=",
+              "value": "81"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Withdrawn_Technical_Review_and_Comment": {
+    "start_date": {
+      "attr": "ADJUDICATION_DATE",
+      "op": "not_null"
+    },
+    "logic": {
+      "and": [
+        {
+          "attr": "ADJUDICATION_DATE",
+          "op": "not_null"
+        },
+        {
+          "attr": "STATUSTRANSFORMED",
+          "op": "=",
+          "value": "Abandoned"
+        }
+      ]
+    }
+  }
+}
