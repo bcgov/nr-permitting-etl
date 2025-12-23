@@ -1,6 +1,6 @@
 # Permitting ETL Engine
 
-This project implements a metadata-driven ETL pipeline to transform permitting system records into standardized `ProcessEventSet` JSON objects based on the [NR-PIES Specification](https://bcgov.github.io/nr-pies/docs/spec/element/message/process_event_set).
+This project implements a metadata-driven ETL pipeline to transform permitting system records into standardized `ProcessEventSet` JSON objects based on the [NR-PIES Specification](https://bcgov.github.io/nr-pies/docs/intro).
 
 ## Why Use This ETL Engine?
 
