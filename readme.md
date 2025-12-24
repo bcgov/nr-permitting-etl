@@ -1,165 +1,339 @@
 # Permitting ETL Engine
 
-This project implements a metadata-driven ETL pipeline to transform permitting system records into standardized `ProcessEventSet` JSON objects based on the [NR-PIES Specification](https://bcgov.github.io/nr-pies/docs/intro).
+The **Permitting ETL Engine** is a **metadata-driven Python ETL framework** that transforms permitting system records into standardized **NR-PIES `ProcessEventSet` JSON** objects, ready for downstream consumers such as **PEACH**.
 
-## Why Use This ETL Engine?
+This repo is designed to **separate business mapping logic from ETL tooling**, so that changes to event rules and lifecycle structures can be made by updating mapping files (JSON) rather than rewriting code or rebuilding ETL workflows.
 
-Traditionally, permitting ETL processes require hardcoded logic or complex reconfiguration of ETL tools whenever the mapping rules or lifecycle logic change. This ETL engine eliminates that friction by introducing a **metadata-driven**, **fully decoupled** design.
+> NR-PIES Specification: https://bcgov.github.io/nr-pies/docs/intro
 
-### Key Advantages
+---
 
-- **No More Hardcoding**  
-    All process mapping logic is externalized into versioned JSON files. This means:
-    - No changes to Python code
-    - No updates to ETL Tool transformers or logic trees
-    - No need to rebuild your workflow pipelines
+## Table of Contents
 
-- **Plug & Play with Any ETL Tool**  
-    The engine is framework-agnostic. You can:
-    - Run it inside **FME** (via PythonCaller)
-    - Run it inside **Fabric Pipelines**
-    - Call it from **Airflow**, **Azure Data Factory**, or other orchestration tools
-    - Use it in **standalone scripts** or **API services**
+- [Permitting ETL Engine](#permitting-etl-engine)
+  - [What This Repo Does](#what-this-repo-does)
+  - [Key Benefits](#key-benefits)
+  - [Architecture (High Level)](#architecture-high-level)
+  - [Inputs and Mapping Files](#inputs-and-mapping-files)
+  - [How the Engine Works](#how-the-engine-works)
+  - [Repository Structure](#repository-structure)
+  - [Installation](#installation)
+  - [Usage](#usage)
+    - [Option A: Standalone Python](#option-a-standalone-python)
+    - [Option B: FME (PythonCaller)](#option-b-fme-pythoncaller)
+    - [Option C: Microsoft Fabric](#option-c-microsoft-fabric)
+    - [Option D: Other Orchestrators (Airflow / ADF)](#option-d-other-orchestrators-airflow--adf)
+  - [Outputs](#outputs)
+  - [Operational Notes](#operational-notes)
+  - [Logging and Validation](#logging-and-validation)
+  - [Extending the Engine](#extending-the-engine)
+  - [Roadmap](#roadmap)
+  - [Getting Help / Reporting Issues](#getting-help--reporting-issues)
+  - [Contributing](#contributing)
+  - [License](#license)
 
-- **Dynamic Lifecycle Mapping**  
-    The lifecycle levels (`PHASE → STAGE → STATE`) are now dynamically loaded from `lifecycle_map.json`. This ensures your pipeline automatically adjusts to changes in business workflows.
+---
 
-- **Efficient + Maintainable**  
-    By managing logic in human-readable JSON:
-    - Business users and analysts can update mappings without touching code
-    - Developers avoid frequent redeploys or script rewrites
-    - Workflows remain clean, portable, and version-controlled  
-    You don't need to manage the JSON directly. Instead, you can manage the mapping logic in a CSV file and use the tool available at [nr-etl-mapping-convertor](https://github.com/bcgov/nr-etl-mapping-convertor) to automatically convert it to JSON.
+## What This Repo Does
 
-- **Time-Saving + Scalable**  
-    Reduces update time from hours to minutes and scales easily across:
-    - Multiple permitting systems
-    - New schema versions
-    - New jurisdictions or application processes
+This repository provides:
 
-> This engine represents a shift from static ETL logic to **adaptive**, **configurable**, and **enterprise-ready** transformation workflows.
+- A **Python transformation engine** that reads:
+  - **source permitting data** (rows / features)
+  - **rules.json** (event detection logic)
+  - **lifecycle_map.json** (rule → lifecycle class mapping)
 
-## Overview
+- And produces:
+  - **NR-PIES ProcessEventSet JSON** objects
+  - Optionally **JSONL** files, **validation logs**, and **push-ready payloads** for PEACH or other APIs
 
-This ETL Engine is designed to run in any ETL tool, with specific support for integration into FME workspaces and Fabric Pipelines. It applies rule-based logic to permit records and generates structured `process_event` output in accordance with NR-PIES specs.
+---
 
-### Key Inputs
+## Key Benefits
 
-- `rules.json`: Defines process event match conditions.
-- `lifecycle_map.json`: Maps each rule to hierarchical process code levels (e.g., PHASE → STAGE → STATE).
-- Source permit data: Typically from Oracle or CSV.
+- **Metadata-driven**: rules are externalized into JSON files (auditable + version-controlled).
+- **Framework-agnostic**: same business logic works across Fabric, FME, Airflow, Azure Data Factory, etc.
+- **Low-maintenance**: update mapping JSON rather than editing pipelines or hardcoding logic.
+- **Scalable**: supports multiple domains (Water, Lands, ATS, etc.) and future systems.
+- **Consistent output**: all domains output the same NR-PIES structure.
 
-## How It Works
+---
 
-1. **Feature Extraction**  
-     All incoming attributes from the feature are extracted and normalized.
+## Architecture (High Level)
 
-2. **Rule Matching**  
-     Each rule in `rules.json` is evaluated against the feature row.
+The engine is typically used as part of a layered ETL architecture:
 
-3. **Event Generation**  
-     Matching rules are transformed into `process_event` objects with dates, process codes, and statuses.
+- **L0** Source Systems (Oracle views, business system extracts, etc.)
+- **L1** Ingestion into a landing/raw layer
+- **L2** Dataflow / transformations (cleaning, joins, DQ checks) → curated tables
+- **L3** Curated Lakehouse / “Gold” tables (trusted inputs)
+- **L4** **This repo**: apply `rules.json` + `lifecycle_map.json` to generate ProcessEventSet JSON
+- **L5** Outputs: JSONL + validation/logs + API push (e.g., PEACH)
+- **L6** Historical archives for audit/replay/backfill
 
-4. **JSON Output**  
-     A `ProcessEventSet` JSON object is generated and saved to the specified output location.
+> When onboarding a new business system, the pattern stays the same.  
+> Only the **source data** and **L2 transformation/join logic** are system-specific.
 
-## Directory Structure
+---
 
-```plaintext
-.
-├── FME/
-│   ├── rules.json            # Mapping Rule definitions
-│   ├── lifecycle_map.json    # Lifecycle mapping
-│   ├── pythoncaller.py       # PythonCaller script for FME (FeatureProcessor class)
-├── Fabric/
-│   ├── mapping_logic/
-│   │   ├── lifecycle_map.json    # Lifecycle mapping
-│   │   ├── rules_land.json       # Land-specific rules
-│   │   └── rules_water.json      # Water-specific rules
-│   ├── notebook/
-│       ├── lands_pies_id.py      # Land ETL logic
-│       ├── water_authorizationid.py
-│       ├── water_jobnumber.py
-│       └── water_vfcbctrackingnumber.py
-├── permit_etl_core.py        # Shared ETL logic (used by both FME and Fabric)
+## Inputs and Mapping Files
+
+### `rules.json`
+
+Defines the **event detection rules** used to create `process_events`.
+
+Typical rule responsibilities:
+- Identify whether an event exists for a record (based on field presence / conditions)
+- Choose event date fields (`start_date`, optional `end_date`)
+- Provide event metadata for downstream mapping
+
+### `lifecycle_map.json`
+
+Maps each rule key to the **NR-PIES lifecycle class path**, typically a 3–4 level hierarchy.
+
+Example concepts:
+- PHASE → STAGE → STATE
+- The engine uses this to populate the `class` field on each `process_event_set`.
+
+### Source Data
+
+Source records are typically:
+- Oracle database/views
+- Fabric Lakehouse curated tables
+
+**Important**: The engine assumes your upstream ETL step has:
+- standardized key fields
+- consistent date formats where possible
+- cleaned nulls / types
+- produced join-ready curated outputs
+
+---
+
+## How the Engine Works
+
+At runtime, the engine executes the following workflow per record:
+
+1. **Normalize input attributes**
+   - Trim text, standardize nulls, interpret dates
+   - Ensure expected keys exist (when missing, logic should fail gracefully)
+
+2. **Evaluate rules**
+   - Loop through each rule in `rules.json`
+   - Determine if the record matches (e.g., field exists, conditions satisfied)
+
+3. **Generate events**
+   - For each matching rule:
+     - Compute `start_date` (and optional `end_date`)
+     - Map the rule to a lifecycle class via `lifecycle_map.json`
+     - Build a `process_event` entry
+
+4. **Assemble ProcessEventSet**
+   - Collect process events into a single `ProcessEventSet`
+   - Attach identifiers and key metadata
+   - Output as JSON (or JSONL line)
+
+---
+
+## Usage
+
+### Option A: Standalone Python
+
+Use this option if you want to run locally, in a batch job, or in an orchestrator.
+
+Example (illustrative):
+
+```bash
+python run_etl.py \
+  --input-file ./data/source.parquet \
+  --rules ./mappings/rules.json \
+  --lifecycle ./mappings/lifecycle_map.json \
+  --output ./out/process_event_set.jsonl
 ```
 
-## JSON Output Format
+Typical behaviors:
+- Read input records from CSV/Parquet.
+- Produce one JSON object per record (JSONL).
+- Emit validation logs if configured.
 
-Conforms to the [NR-PIES `ProcessEventSet`](https://bcgov.github.io/nr-pies/docs/spec/element/message/process_event_set) structure:
+If your repo does not include `run_etl.py`, call `permit_etl_core.py` from your own wrapper.
 
-```json
-{
-    "transaction_id": "uuid",
-    "version": "0.1.0",
-    "kind": "ProcessEventSet",
-    "system_id": "ITSM-5917",
-    "record_id": "123456",
-    "record_kind": "Permit",
-    "on_hold_event_set": [],
-    "process_event_set": [
-        {
-            "event": {
-                "start_date": "YYYY-MM-DD",
-                "end_date": "YYYY-MM-DD"
-            },
-            "process": {
-                "code": "STATE_16",
-                "code_display": "State 16",
-                "code_set": [
-                    "LIFECYCLE_16",
-                    "APPLICATION_16",
-                    "STAGE_16",
-                    "STATE_16"
-                ],
-                "code_system": "https://bcgov.github.io/nr-pies/docs/spec/code_system/application_process",
-                "status": "Some status",
-                "status_code": "CODE",
-                "status_description": "Optional description"
-            }
-        }
-    ]
-}
-```
+---
 
-## 🛠 Requirements
-
-- Python 3.11+
-- Ensure `permit_etl_core.py`, `rules.json`, and `lifecycle_map.json` are placed in the appropriate directory for proper integration.
-- JSON rules and lifecycle maps stored as UTF-8 files.
-
-## How to Use in FME
+### Option B: FME (PythonCaller)
 
 1. Add a **PythonCaller** transformer.
-2. Open the `pythoncaller.py` file and copy its entire content into the PythonCaller transformer.
-3. Configure macro values:
-     - `RulesFile` → path to `rules.json`
-     - `LifecycleFile` → path to `lifecycle_map.json`
-4. Output attribute: `json_output` (type: string).  
-     Add an HTTPCaller transformer with the following configuration:
-     - Endpoint URL: Specify the Hub API endpoint (e.g., `https://api.example.com/endpoint`).
-     - HTTP Method: POST.
-     - Headers: Include `Content-Type: application/json` and any required authentication headers (e.g., `Authorization: Bearer <token>`).
-     - Body: Set the body to the `json_output` attribute.
-     - Response Handling: Capture the response in an attribute (e.g., `response_output`) for further processing or logging.
+2. Copy the entire content of `pythoncaller.py` into the PythonCaller.
+3. Set macro values:
+   - `RulesFile` → path to `rules.json`
+   - `LifecycleFile` → path to `lifecycle_map.json`
+4. Output attribute:
+   - `json_output` (string)
 
-## How to Use in Fabric Pipelines
+#### Push to API (PEACH or other service)
 
-1. Add the required notebook scripts to your Fabric pipeline.
-2. Configure the pipeline to load the appropriate `rules.json` and `lifecycle_map.json` files.
-3. Define the input source (e.g., Oracle, CSV) and output destination for the `ProcessEventSet` JSON.
-4. Run the pipeline to process the data and generate the output.
+1. Add an **HTTPCaller** transformer.
+2. Example configuration:
+   - **Method**: POST
+   - **Headers**:
+     - `Content-Type: application/json`
+     - `Authorization: Bearer <token>`
+   - **Body**: `json_output`
+   - **Store response in**: `response_output`
 
-## Optional: Use in Any ETL Tool
+---
 
-### Using the Universal ETL Logic Module
+### Option C: Microsoft Fabric
 
-A standalone script leveraging the same core logic is available in `permit_etl_core.py`. This script can be integrated into automation tools such as Airflow, Azure Data Factory, or other ETL platforms. Additionally, you can use `run_etl.py` to orchestrate data transformations across various ETL platforms.
+Typical Fabric usage:
+1. Ingest source data into Fabric Lakehouse (L1).
+2. Use Dataflow Gen2 to:
+   - Clean
+   - Normalize
+   - Join
+   - Apply DQ checks (L2)
+3. Write curated outputs into trusted curated tables (L3).
+4. Run a Fabric Notebook to execute the ETL engine (L4):
+   - Load curated table rows.
+   - Load `rules.json` and `lifecycle_map.json`.
+   - Generate `ProcessEventSet` JSON.
+5. Emit outputs (L5):
+   - JSONL files for replay/audit.
+   - Validation logs.
+   - Optional PEACH API push.
+6. Archive outputs for historical retention (L6).
 
-#### Output
+---
 
-The script will generate a `ProcessEventSet` JSON file based on the provided inputs and save it to the specified `output_file` path.
+### Option D: Other Orchestrators (Airflow / ADF)
 
-## Contact
+The ETL engine is a plain Python module and can be embedded into:
+- **Airflow DAG tasks**
+- **Azure Data Factory custom activities**
+- **Container jobs / scheduled compute**
 
-For questions or contributions, reach out to the CSBC NR data team.
+#### Recommended pattern:
+- Orchestrator handles scheduling + data movement.
+- Engine handles only transformation + schema output.
+
+---
+
+## Outputs
+
+### ProcessEventSet JSON
+
+Primary output is a `ProcessEventSet` JSON object per record, containing:
+- Record identifier(s)
+- `process_events_set` array
+- Lifecycle class paths per event
+- Event dates and metadata
+
+### JSONL (Recommended)
+
+For operational pipelines, JSONL is recommended:
+- One JSON object per line.
+- Easier replay/backfill.
+- Supports large-scale processing.
+
+### Logs / Validation Results (Optional)
+
+Depending on integration:
+- Validation pass/fail flags.
+- Missing field diagnostics.
+- Rule hit/miss counts.
+- Per-record error capture.
+
+---
+
+## Operational Notes
+
+### Record Linkage / Identifiers (Water Example)
+
+Some domains do not yet have a record linkage system. In those cases, ID selection may be priority-based.
+
+Example (Water, temporary):
+1. Use Job Number if present.
+2. Else use VFCBC Tracking ID.
+3. Else fall back to Authorization ID.
+
+This is a temporary solution until a record linkage system exists, at which point a single unique ID will be used.
+
+---
+
+## Logging and Validation
+
+### Recommended best practices:
+- Structured logging with record identifiers included.
+- Track:
+  - Number of records processed.
+  - Number of events generated.
+  - Rule hit counts.
+  - Validation failures and reasons.
+- Write logs alongside JSONL outputs to support:
+  - Audit.
+  - Replay.
+  - Troubleshooting.
+  - Operational monitoring.
+
+---
+
+## Extending the Engine
+
+To add support for a new permitting domain or business system:
+1. Build the curated dataset upstream (clean + join + DQ checks).
+2. Create or update:
+   - `rules.json`
+   - `lifecycle_map.json`
+3. Validate output against NR-PIES.
+4. Deploy updated mappings (no code change required unless new rule operators are needed).
+
+---
+
+## Roadmap
+
+- Improve validation coverage and error reporting.
+- Add more examples for Fabric.
+- Add automated tests for rule evaluation.
+- Add mapping conversion utilities (CSV → JSON) where applicable.
+- Enhance documentation for business users.
+
+---
+
+## Getting Help / Reporting Issues
+
+Contact: **CSBC NR Data Team**
+
+Or open an issue in this repository with:
+- Domain (Water / Lands / etc.)
+- Sample record identifiers.
+- Expected vs actual events.
+- Mapping file version used.
+
+---
+
+## Contributing
+
+1. Fork the repo.
+2. Create a branch for your change.
+3. Add/modify mappings and/or code.
+4. Submit a PR with a clear description and test evidence.
+
+---
+
+## License
+
+### Code License (Apache 2.0)
+
+```plaintext
+Copyright 2025 Province of British Columbia
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at 
+
+   http://www.apache.org/licenses/LICENSE-2.0
+```
+
+### Documentation License (CC BY 4.0)
+
+Documentation and non-code content are licensed under:
+[Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/)
